@@ -80,7 +80,7 @@ export const SelectSeats: React.FC = () => {
     const handleContinue = () => {
         if (selectedSeats.length === 0) return;
 
-        navigate(`/bookings/${id}/summary`, {
+        navigate(`/bookings/${id}/payment`, {
             state: {
                 bookingData,
                 event,

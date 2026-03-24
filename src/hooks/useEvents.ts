@@ -88,3 +88,11 @@ export const useUserEvents = () => {
         queryFn: dataService.getUserEvents,
     });
 };
+
+export const useEventAnalytics = (eventId: string) => {
+    return useQuery({
+        queryKey: ['events', 'analytics', eventId],
+        queryFn: () => dataService.getEventAnalytics(eventId),
+        enabled: !!eventId,
+    });
+};

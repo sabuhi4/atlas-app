@@ -383,21 +383,33 @@ export const Tickets: React.FC = () => {
                                                         {formatPrice(booking.total_amount)}
                                                     </Typography>
                                                 </Box>
-                                                <Button
-                                                    variant="outlined"
-                                                    onClick={() => navigate(`/events/${booking.events.id}`)}
-                                                    sx={{
-                                                        borderColor: 'primary.main',
-                                                        color: 'primary.main',
-                                                        fontWeight: 600,
-                                                        '&:hover': {
-                                                            borderColor: 'primary.dark',
-                                                            bgcolor: 'rgba(99, 102, 241, 0.05)',
-                                                        },
-                                                    }}
-                                                >
-                                                    View Event
-                                                </Button>
+                                                <Box display="flex" gap={1}>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => navigate(`/tickets/${booking.id}`)}
+                                                        sx={{
+                                                            fontWeight: 600,
+                                                            background: 'linear-gradient(135deg, #6366F1 0%, #EC4899 100%)',
+                                                        }}
+                                                    >
+                                                        View Ticket
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
+                                                        onClick={() => navigate(`/events/${booking.events.id}`)}
+                                                        sx={{
+                                                            borderColor: 'primary.main',
+                                                            color: 'primary.main',
+                                                            fontWeight: 600,
+                                                            '&:hover': {
+                                                                borderColor: 'primary.dark',
+                                                                bgcolor: 'rgba(99, 102, 241, 0.05)',
+                                                            },
+                                                        }}
+                                                    >
+                                                        View Event
+                                                    </Button>
+                                                </Box>
                                             </Box>
                                         </Box>
                                     </Paper>

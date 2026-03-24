@@ -24,7 +24,6 @@ import {
     LocationOn as LocationIcon,
     AttachMoney as MoneyIcon,
     People as PeopleIcon,
-    Image as ImageIcon,
     Description as DescriptionIcon,
     Category as CategoryIcon,
     Delete as DeleteIcon,
@@ -34,6 +33,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useEvent, useUpdateEvent, useDeleteEvent } from '@/hooks/useEvents';
 import { AppHeader } from '@/components/navigation/AppHeader';
+import { ImageUploadZone } from '@/components/ImageUploadZone';
 import { eventCategories } from '@/utils/schemas';
 import type { CreateEvent } from '@/utils/schemas';
 
@@ -386,24 +386,14 @@ export const UpdateEvent: React.FC = () => {
                             </Box>
 
                             <Box>
-                                <Typography variant="subtitle2" gutterBottom fontWeight={600}>
-                                    Image URL
-                                </Typography>
                                 <Controller
                                     name="image"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            fullWidth
-                                            placeholder="https://example.com/image.jpg"
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <ImageIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
+                                        <ImageUploadZone
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            label="Event Image"
                                         />
                                     )}
                                 />

@@ -18,7 +18,6 @@ import {
     LocationOn as LocationIcon,
     AttachMoney as MoneyIcon,
     People as PeopleIcon,
-    Image as ImageIcon,
     Description as DescriptionIcon,
     Category as CategoryIcon,
 } from '@mui/icons-material';
@@ -27,6 +26,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useCreateEvent } from '@/hooks/useEvents';
 import { AppHeader } from '@/components/navigation/AppHeader';
+import { ImageUploadZone } from '@/components/ImageUploadZone';
 import { eventCategories } from '@/utils/schemas';
 import type { CreateEvent as CreateEventType } from '@/utils/schemas';
 
@@ -239,18 +239,10 @@ export const CreateEvent: React.FC = () => {
                                     name="image"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Image URL"
-                                            fullWidth
-                                            helperText="Enter a URL for the event image"
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <ImageIcon sx={{ color: 'primary.main' }} />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
+                                        <ImageUploadZone
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            label="Event Image"
                                         />
                                     )}
                                 />

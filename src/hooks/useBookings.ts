@@ -29,3 +29,18 @@ export const useCreateBooking = () => {
         },
     });
 };
+
+export const useCancelBooking = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (bookingId: string) => dataService.cancelBooking(bookingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            showSuccess('Booking cancelled successfully');
+        },
+        onError: (error: Error) => {
+            showError(error.message || 'Failed to cancel booking');
+        },
+    });
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -11,6 +11,11 @@ import {
     Chip,
     CircularProgress,
     Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -20,8 +25,10 @@ import {
     Person as PersonIcon,
     AttachMoney as MoneyIcon,
     QrCode as QrCodeIcon,
+    Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { useBookings } from '@/hooks/useBookings';
+import { QRCodeSVG } from 'qrcode.react';
+import { useBookings, useCancelBooking } from '@/hooks/useBookings';
 import { AppHeader } from '@/components/navigation/AppHeader';
 import { formatSmartDate, formatPrice } from '@/utils/format';
 
@@ -29,6 +36,8 @@ export const TicketDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { data: bookings, isLoading, error } = useBookings();
+    const cancelBooking = useCancelBooking();
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const booking = bookings?.find((b) => b.id === id);
 
@@ -63,6 +72,14 @@ export const TicketDetails: React.FC = () => {
 
     const event = booking.events;
     const statusColor = booking.status === 'confirmed' ? 'success' : booking.status === 'pending' ? 'warning' : 'error';
+    const canCancel = booking.status === 'confirmed' && (!event || new Date(event.start_date) > new Date());
+
+    const handleCancelConfirm = () => {
+        cancelBooking.mutate(booking.id, {
+            onSuccess: () => navigate('/tickets'),
+        });
+        setConfirmOpen(false);
+    };
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', pb: 10 }}>
@@ -123,10 +140,21 @@ export const TicketDetails: React.FC = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+                                    background: booking.payment_status === 'paid'
+                                        ? 'white'
+                                        : 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+                                    p: booking.payment_status === 'paid' ? 1 : 0,
                                 }}
                             >
-                                <QrCodeIcon sx={{ fontSize: 120, color: 'text.secondary' }} />
+                                {booking.payment_status === 'paid' ? (
+                                    <QRCodeSVG
+                                        value={`${booking.id}|${booking.order_number}`}
+                                        size={172}
+                                        style={{ borderRadius: 8, display: 'block' }}
+                                    />
+                                ) : (
+                                    <QrCodeIcon sx={{ fontSize: 120, color: 'text.secondary' }} />
+                                )}
                             </Box>
                             <Typography variant="caption" color="text.secondary">
                                 Order #{booking.order_number}
@@ -242,8 +270,41 @@ export const TicketDetails: React.FC = () => {
                     >
                         View Event Details
                     </Button>
+
+                    {canCancel && (
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            size="large"
+                            fullWidth
+                            startIcon={<CancelIcon />}
+                            onClick={() => setConfirmOpen(true)}
+                        >
+                            Cancel Booking
+                        </Button>
+                    )}
                 </Stack>
             </Container>
+
+            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+                <DialogTitle>Cancel Booking</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to cancel your booking for "{event.title}"? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmOpen(false)}>Keep Booking</Button>
+                    <Button
+                        onClick={handleCancelConfirm}
+                        color="error"
+                        variant="contained"
+                        disabled={cancelBooking.isPending}
+                    >
+                        {cancelBooking.isPending ? 'Cancelling...' : 'Confirm Cancel'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

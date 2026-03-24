@@ -3,7 +3,6 @@ import {
     Box,
     Typography,
     Container,
-    CircularProgress,
     Alert,
     Chip,
     Stack,
@@ -16,10 +15,11 @@ import {
     FormControl,
     InputLabel,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUserStore } from '@/store/userStore';
 import { useEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/cards/EventCard';
+import { EventCardSkeletonGrid } from '@/components/cards/EventCardSkeletonGrid';
 import { AppHeader } from '@/components/navigation/AppHeader';
 import { eventCategories } from '@/utils/schemas';
 
@@ -27,10 +27,27 @@ export const Home: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUserStore();
     const { data: events, isLoading, error } = useEvents();
-    const [selectedCategory, setSelectedCategory] = useState<string>('All');
-    const [sortBy, setSortBy] = useState<string>('date');
-    const [showCancelled, setShowCancelled] = useState<boolean>(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const selectedCategory = searchParams.get('category') || 'All';
+    const sortBy = searchParams.get('sort') || 'date';
+    const showCancelled = searchParams.get('cancelled') === 'true';
     const [itemsToShow, setItemsToShow] = useState<number>(9);
+
+    const setSelectedCategory = (val: string) =>
+        setSearchParams(prev => {
+            if (val === 'All') prev.delete('category'); else prev.set('category', val);
+            return prev;
+        }, { replace: true });
+    const setSortBy = (val: string) =>
+        setSearchParams(prev => {
+            if (val === 'date') prev.delete('sort'); else prev.set('sort', val);
+            return prev;
+        }, { replace: true });
+    const setShowCancelled = (val: boolean) =>
+        setSearchParams(prev => {
+            if (val) prev.set('cancelled', 'true'); else prev.delete('cancelled');
+            return prev;
+        }, { replace: true });
 
     const filteredEvents = useMemo(() => {
         if (!events) return [];
@@ -290,11 +307,7 @@ export const Home: React.FC = () => {
                     </Stack>
                 </Box>
 
-                {isLoading && (
-                    <Box display="flex" justifyContent="center" py={8}>
-                        <CircularProgress />
-                    </Box>
-                )}
+                {isLoading && <EventCardSkeletonGrid count={9} />}
 
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>

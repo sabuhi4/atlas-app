@@ -3,7 +3,6 @@ import {
     Box,
     Typography,
     Container,
-    CircularProgress,
     Paper,
     Button,
 } from '@mui/material';
@@ -11,6 +10,7 @@ import { Favorite as FavoriteIcon, Explore as ExploreIcon, Login as LoginIcon } 
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '@/hooks/useFavorites';
 import { EventCard } from '@/components/cards/EventCard';
+import { EventCardSkeletonGrid } from '@/components/cards/EventCardSkeletonGrid';
 import { AppHeader } from '@/components/navigation/AppHeader';
 import { useUserStore } from '@/store/userStore';
 
@@ -93,11 +93,7 @@ export const Favorites: React.FC = () => {
             </Box>
 
             <Container maxWidth="lg" sx={{ pb: 8 }}>
-                {isLoading && (
-                    <Box display="flex" justifyContent="center" py={8}>
-                        <CircularProgress size={48} />
-                    </Box>
-                )}
+                {isLoading && <EventCardSkeletonGrid count={6} />}
 
                 {!user && !isLoading && (
                     <Paper

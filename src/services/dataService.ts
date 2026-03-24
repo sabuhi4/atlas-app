@@ -214,4 +214,95 @@ export const dataService = {
         if (error) throw error;
         return data as Event[];
     },
+
+    async cancelBooking(bookingId: string) {
+        const { error } = await supabase
+            .from('bookings')
+            .update({ status: 'cancelled' })
+            .eq('id', bookingId);
+
+        if (error) throw error;
+    },
+
+    async uploadEventImage(file: File): Promise<string> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
+
+        const { error } = await supabase.storage
+            .from('event-images')
+            .upload(path, file, { upsert: true });
+
+        if (error) throw error;
+
+        const { data } = supabase.storage.from('event-images').getPublicUrl(path);
+        return data.publicUrl;
+    },
+
+    async uploadAvatar(file: File): Promise<string> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/avatar.${ext}`;
+
+        const { error } = await supabase.storage
+            .from('avatars')
+            .upload(path, file, { upsert: true });
+
+        if (error) throw error;
+
+        const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+        return data.publicUrl;
+    },
+
+    async updateUserProfile(updates: { full_name?: string; avatar_url?: string }) {
+        const { data, error } = await supabase.auth.updateUser({ data: updates });
+        if (error) throw error;
+        return data.user;
+    },
+
+    async updatePassword(newPassword: string) {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+    },
+
+    async getEventAnalytics(eventId: string) {
+        const { data, error } = await supabase
+            .from('bookings')
+            .select('id, total_amount, status, payment_status, created_at')
+            .eq('event_id', eventId);
+
+        if (error) throw error;
+
+        const bookings = data || [];
+        const total_bookings = bookings.length;
+        const total_revenue = bookings
+            .filter(b => b.payment_status === 'paid')
+            .reduce((sum, b) => sum + (b.total_amount || 0), 0);
+        const attendees = bookings.filter(b => b.status === 'confirmed').length;
+
+        const revenueByDate = bookings
+            .filter(b => b.payment_status === 'paid')
+            .reduce<Record<string, number>>((acc, b) => {
+                const day = (b.created_at as string).slice(0, 10);
+                acc[day] = (acc[day] || 0) + b.total_amount;
+                return acc;
+            }, {});
+
+        const revenueOverTime = Object.entries(revenueByDate)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([date, revenue]) => ({ date, revenue }));
+
+        const statusCounts = bookings.reduce<Record<string, number>>((acc, b) => {
+            acc[b.status] = (acc[b.status] || 0) + 1;
+            return acc;
+        }, {});
+
+        const bookingsByStatus = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
+
+        return { total_bookings, total_revenue, attendees, revenueOverTime, bookingsByStatus };
+    },
 };

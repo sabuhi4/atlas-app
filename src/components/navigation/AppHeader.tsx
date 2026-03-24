@@ -23,6 +23,7 @@ import {
     Search as SearchIcon,
     Favorite as FavoriteIcon,
     ConfirmationNumber as TicketIcon,
+    CalendarMonth as CalendarIcon,
     Add as AddIcon,
     DarkMode as DarkModeIcon,
     LightMode as LightModeIcon,
@@ -65,6 +66,7 @@ export const AppHeader: React.FC = () => {
         { label: 'Home', icon: <HomeIcon />, path: '/home' },
         { label: 'Search', icon: <SearchIcon />, path: '/search' },
         { label: 'Favorites', icon: <FavoriteIcon />, path: '/favorites' },
+        { label: 'Calendar', icon: <CalendarIcon />, path: '/calendar' },
         { label: 'Tickets', icon: <TicketIcon />, path: '/tickets' },
     ];
 

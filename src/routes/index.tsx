@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PublicRoute } from '@/components/guards/PublicRoute';
+import { ProtectedRoute } from '@/components/guards/ProtectedRoute';
 import { CircularProgress, Box } from '@mui/material';
 
 const SignIn = lazy(() => import('@/features/auth/SignIn').then(module => ({ default: module.SignIn })));
@@ -17,9 +18,12 @@ const EventDetails = lazy(() => import('@/features/events/EventDetails').then(mo
 const CreateEvent = lazy(() => import('@/features/events/CreateEvent').then(module => ({ default: module.CreateEvent })));
 const UpdateEvent = lazy(() => import('@/features/events/UpdateEvent').then(module => ({ default: module.UpdateEvent })));
 const ManageEvents = lazy(() => import('@/features/events/ManageEvents').then(module => ({ default: module.ManageEvents })));
+const EventAnalytics = lazy(() => import('@/features/events/EventAnalytics').then(module => ({ default: module.EventAnalytics })));
 const BookEvent = lazy(() => import('@/features/bookings/BookEvent').then(module => ({ default: module.BookEvent })));
 const SelectSeats = lazy(() => import('@/features/bookings/SelectSeats').then(module => ({ default: module.SelectSeats })));
-const Summary = lazy(() => import('@/features/bookings/Summary').then(module => ({ default: module.Summary })));
+const Payment = lazy(() => import('@/features/bookings/Payment').then(module => ({ default: module.Payment })));
+const Confirmation = lazy(() => import('@/features/bookings/Confirmation').then(module => ({ default: module.Confirmation })));
+const Calendar = lazy(() => import('@/features/Calendar').then(module => ({ default: module.Calendar })));
 const Help = lazy(() => import('@/features/support/Help').then(module => ({ default: module.Help })));
 const Privacy = lazy(() => import('@/features/support/Privacy').then(module => ({ default: module.Privacy })));
 const About = lazy(() => import('@/features/support/About').then(module => ({ default: module.About })));
@@ -38,16 +42,19 @@ export const AppRoutes: React.FC = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/favorites" element={<Favorites />} />
-                <Route path="/tickets" element={<Tickets />} />
-                <Route path="/tickets/:id" element={<TicketDetails />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
+                <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/events/create" element={<ProtectedRoute><CreateEvent /></ProtectedRoute>} />
+                <Route path="/events/manage" element={<ProtectedRoute><ManageEvents /></ProtectedRoute>} />
+                <Route path="/events/:id/edit" element={<ProtectedRoute><UpdateEvent /></ProtectedRoute>} />
+                <Route path="/events/:id/analytics" element={<ProtectedRoute><EventAnalytics /></ProtectedRoute>} />
                 <Route path="/events/:id" element={<EventDetails />} />
-                <Route path="/events/:id/edit" element={<UpdateEvent />} />
-                <Route path="/events/create" element={<CreateEvent />} />
-                <Route path="/events/manage" element={<ManageEvents />} />
-                <Route path="/bookings/:id" element={<BookEvent />} />
-                <Route path="/bookings/:id/select-seats" element={<SelectSeats />} />
-                <Route path="/bookings/:id/summary" element={<Summary />} />
+                <Route path="/bookings/:id" element={<ProtectedRoute><BookEvent /></ProtectedRoute>} />
+                <Route path="/bookings/:id/select-seats" element={<ProtectedRoute><SelectSeats /></ProtectedRoute>} />
+                <Route path="/bookings/:id/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+                <Route path="/bookings/:id/confirmation" element={<ProtectedRoute><Confirmation /></ProtectedRoute>} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/about" element={<About />} />

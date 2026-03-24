@@ -4,7 +4,6 @@ import {
     Box,
     Typography,
     Container,
-    CircularProgress,
     Alert,
     Button,
     Stack,
@@ -15,10 +14,12 @@ import {
     MenuItem,
     FormControlLabel,
     Switch,
+    IconButton,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, BarChart as BarChartIcon } from '@mui/icons-material';
 import { useUserEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/cards/EventCard';
+import { EventCardSkeleton } from '@/components/cards/EventCardSkeleton';
 import { AppHeader } from '@/components/navigation/AppHeader';
 
 export const ManageEvents: React.FC = () => {
@@ -131,9 +132,9 @@ export const ManageEvents: React.FC = () => {
                     )}
 
                     {isLoading && (
-                        <Box display="flex" justifyContent="center" py={8}>
-                            <CircularProgress />
-                        </Box>
+                        <Stack spacing={2}>
+                            {Array.from({ length: 3 }).map((_, i) => <EventCardSkeleton key={i} />)}
+                        </Stack>
                     )}
 
                     {error && (
@@ -158,7 +159,28 @@ export const ManageEvents: React.FC = () => {
                         <>
                             <Stack spacing={2}>
                                 {visibleEvents.map((event) => (
-                                    <EventCard key={event.id} event={event} />
+                                    <Box key={event.id} sx={{ position: 'relative' }}>
+                                        <EventCard event={event} />
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/events/${event.id}/analytics`);
+                                            }}
+                                            sx={{
+                                                position: 'absolute',
+                                                top: 12,
+                                                left: 12,
+                                                zIndex: 10,
+                                                bgcolor: 'rgba(255,255,255,0.9)',
+                                                backdropFilter: 'blur(10px)',
+                                                '&:hover': { bgcolor: 'white' },
+                                            }}
+                                            title="View Analytics"
+                                        >
+                                            <BarChartIcon fontSize="small" sx={{ color: 'primary.main' }} />
+                                        </IconButton>
+                                    </Box>
                                 ))}
                             </Stack>
 

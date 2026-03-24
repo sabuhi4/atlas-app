@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
     Box,
     Typography,
     Container,
     TextField,
-    CircularProgress,
     InputAdornment,
     Paper,
     Select,
@@ -17,13 +16,32 @@ import {
 import { Search as SearchIcon, EventNote as EventNoteIcon } from '@mui/icons-material';
 import { useSearchEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/cards/EventCard';
+import { EventCardSkeletonGrid } from '@/components/cards/EventCardSkeletonGrid';
+import { useSearchParams } from 'react-router-dom';
 import { AppHeader } from '@/components/navigation/AppHeader';
 
 export const Search: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState<string>('date');
-    const [showCancelled, setShowCancelled] = useState<boolean>(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const searchQuery = searchParams.get('q') || '';
+    const sortBy = searchParams.get('sort') || 'date';
+    const showCancelled = searchParams.get('cancelled') === 'true';
     const { data: events, isLoading } = useSearchEvents(searchQuery);
+
+    const setSearchQuery = (val: string) =>
+        setSearchParams(prev => {
+            if (val) prev.set('q', val); else prev.delete('q');
+            return prev;
+        }, { replace: true });
+    const setSortBy = (val: string) =>
+        setSearchParams(prev => {
+            if (val === 'date') prev.delete('sort'); else prev.set('sort', val);
+            return prev;
+        }, { replace: true });
+    const setShowCancelled = (val: boolean) =>
+        setSearchParams(prev => {
+            if (val) prev.set('cancelled', 'true'); else prev.delete('cancelled');
+            return prev;
+        }, { replace: true });
 
     const filteredEvents = useMemo(() => {
         if (!events) return [];
@@ -156,11 +174,7 @@ export const Search: React.FC = () => {
             </Box>
 
             <Container maxWidth="lg" sx={{ pb: 8 }}>
-                {isLoading && (
-                    <Box display="flex" justifyContent="center" py={8}>
-                        <CircularProgress size={48} />
-                    </Box>
-                )}
+                {isLoading && <EventCardSkeletonGrid count={6} />}
 
                 {!isLoading && searchQuery && filteredEvents && filteredEvents.length === 0 && (
                     <Paper

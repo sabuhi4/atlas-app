@@ -5,6 +5,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'react-hot-toast';
 import { useUserStore } from '@/store/userStore';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -107,14 +108,16 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
     );
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <BrowserRouter>
-                    {children}
-                    <Toaster position="top-center" />
-                </BrowserRouter>
-            </ThemeProvider>
-        </QueryClientProvider>
+        <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <BrowserRouter>
+                        {children}
+                        <Toaster position="top-center" />
+                    </BrowserRouter>
+                </ThemeProvider>
+            </QueryClientProvider>
+        </ErrorBoundary>
     );
 };
