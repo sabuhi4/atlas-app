@@ -113,7 +113,7 @@ export const EventAnalytics: React.FC = () => {
                     <Stack spacing={3}>
                         <Grid container spacing={3}>
                             {[1, 2, 3].map(i => (
-                                <Grid item xs={12} md={4} key={i}>
+                                <Grid size={{ xs: 12, md: 4 }} key={i}>
                                     <Skeleton variant="rounded" height={96} sx={{ borderRadius: 3 }} />
                                 </Grid>
                             ))}
@@ -126,7 +126,7 @@ export const EventAnalytics: React.FC = () => {
                 {!isLoading && analytics && (
                     <Stack spacing={4}>
                         <Grid container spacing={3}>
-                            <Grid item xs={12} md={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <StatCard
                                     icon={<TicketIcon sx={{ color: 'white' }} />}
                                     label="Total Bookings"
@@ -134,7 +134,7 @@ export const EventAnalytics: React.FC = () => {
                                     gradient="linear-gradient(135deg, #6366F1 0%, #818CF8 100%)"
                                 />
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <StatCard
                                     icon={<MoneyIcon sx={{ color: 'white' }} />}
                                     label="Total Revenue"
@@ -142,7 +142,7 @@ export const EventAnalytics: React.FC = () => {
                                     gradient="linear-gradient(135deg, #EC4899 0%, #F472B6 100%)"
                                 />
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <StatCard
                                     icon={<PeopleIcon sx={{ color: 'white' }} />}
                                     label="Confirmed Attendees"
@@ -188,7 +188,7 @@ export const EventAnalytics: React.FC = () => {
                                             cy="50%"
                                             outerRadius={100}
                                             dataKey="value"
-                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                            label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                                         >
                                             {analytics.bookingsByStatus.map((_, index) => (
                                                 <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
